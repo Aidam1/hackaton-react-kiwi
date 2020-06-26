@@ -9,6 +9,10 @@ const SearchBar = (props) => {
     handleSearch,
     handleCheckboxChange,
     directFlightsOnly,
+    handleDateChange,
+    searchBarDateFrom,
+    searchBarDateTo
+
   } = props;
   return (
     <div>
@@ -24,6 +28,7 @@ const SearchBar = (props) => {
         <option value="MAD">Madrid</option>
         <option value="MXP">Milano</option>
       </select>
+      <input type="date" onChange={(e) => handleDateChange(e, "from")} value={searchBarDateFrom}/>
       <select
         onChange={(e) => handleSelectChange(e, "to")}
         value={searchBarInputTo}
@@ -36,6 +41,9 @@ const SearchBar = (props) => {
         <option value="WAW">Warsaw</option>
         <option value="PED">Pardubice</option>
       </select>
+
+      <input type="date" onChange={(e) => handleDateChange(e, "to")} value={searchBarDateTo}/>
+
       <label>
         Direct flights only
         <input
