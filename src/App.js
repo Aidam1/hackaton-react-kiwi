@@ -1,24 +1,36 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { useState, useEffect } from "react";
+import "./App.css";
+import SearchResult from "./components/SearchResult/SearchResult.jsx";
+import { fetchFlightsFromApi } from "./api/flightsApi";
 
 function App() {
+  const [flightsData, setFlightsData] = useState([]);
+
+  const fetchFlightsData = async () => {
+    const flightsData = await fetchFlightsFromApi();
+    console.log(flightsData.data, "console");
+    setFlightsData(flightsData.data);
+  };
+
+  useEffect(() => {
+    fetchFlightsData();
+  }, []);
+
+  console.log(flightsData, "flights");
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div>
+      {flightsData.map((flight) => (
+        <SearchResult
+          key={flight.id}
+          price={flight.price}
+          cityFrom={flight.cityFrom}
+          flyFrom={flight.flyFrom}
+          cityTo={flight.cityTo}
+          flyTo={flight.flyTo}
+          dTime={flight.dTime}
+          aTime={flight.aTime}
+        />
+      ))}
     </div>
   );
 }
