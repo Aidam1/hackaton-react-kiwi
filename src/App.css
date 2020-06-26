@@ -38,3 +38,11 @@
   align-items: center;
   color: grey;
 }
+
+
+h1 {
+  color: darkgreen;
+  text-align: center;
+  font-size: 7rem;
+
+}

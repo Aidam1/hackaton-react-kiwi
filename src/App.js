@@ -122,6 +122,8 @@ function App() {
 
   return (
     <div style={{ display: "flex", flexDirection: "column" }}>
+      <h1>🥝</h1>
+
       <SearchBar
         handleSelectChange={handleSelectChange}
         searchBarInputFrom={searchBarInputFrom}
