@@ -4,14 +4,12 @@ import SearchResult from "./components/SearchResult/SearchResult.jsx";
 import { fetchFlightsFromApi } from "./api/flightsApi";
 import { Spinner, Alert, Button } from "reactstrap";
 import SearchBar from "./components/SearchBar/SearchBar.jsx";
+import { DateTime } from "luxon";
 
 const btnStyle = {
-  width : '7rem',
-  margin: '2rem auto'
-  
-}
-
-
+  width: "7rem",
+  margin: "2rem auto",
+};
 
 function App() {
   const [flightsData, setFlightsData] = useState([]);
@@ -20,9 +18,17 @@ function App() {
   const [searchBarInputFrom, setSearchBarInputFrom] = useState("PRG");
   const [searchBarInputTo, setSearchBarInputTo] = useState("VLC");
   const [directFlightsOnly, setDirectFlightsOnly] = useState(false);
-  const [searchBarDateFrom, setSearchBarDateFrom] = useState(new Date().toISOString());
-  const [searchBarDateTo, setSearchBarDateTo] = useState(new Date().toISOString());
-
+  const [searchBarDateFrom, setSearchBarDateFrom] = useState(
+    DateTime.fromMillis(Date.now()).toFormat("yyyy-MM-dd")
+  );
+  const [searchBarDateTo, setSearchBarDateTo] = useState(
+    DateTime.fromMillis(Date.now() + 86400000).toFormat("yyyy-MM-dd")
+  );
+  const [resultsNumber, setResultsNumber] = useState(5);
+  console.log(
+    'DateTime.fromMillis(Date.now()).toFormat("yyyy-MM-dd")',
+    DateTime.fromMillis(Date.now()).toFormat("yyyy-MM-dd")
+  );
   const fetchFlightsData = async () => {
     setIsLoading(true);
     const flightsData = await fetchFlightsFromApi(
@@ -34,6 +40,9 @@ function App() {
     );
     console.log(flightsData.data, "console");
     setFlightsData(flightsData.data);
+    setResultsNumber(
+      flightsData.data.length >= 5 ? 5 : flightsData.data.length
+    );
     setIsLoading(false);
   };
 
@@ -47,13 +56,12 @@ function App() {
 
   const handleDateChange = (e, targetInput) => {
     if (targetInput === "from") {
-      setSearchBarDateFrom(e.target.value)
+      setSearchBarDateFrom(e.target.value);
     } else if (targetInput === "to") {
       setSearchBarDateTo(e.target.value);
     }
-    console.log('e.target.value', e.target.value)
-
-  }
+    console.log("e.target.value", e.target.value);
+  };
 
   const handleCheckboxChange = (e) => {
     setDirectFlightsOnly(e.target.checked);
@@ -63,6 +71,15 @@ function App() {
     fetchFlightsData();
   };
 
+  const handleLoadMore = () => {
+    console.log(flightsData.length, "le", resultsNumber);
+    if (resultsNumber + 5 <= flightsData.length) {
+      setResultsNumber(resultsNumber + 5);
+    } else if (resultsNumber < flightsData.length) {
+      setResultsNumber(flightsData.length);
+    }
+  };
+
   useEffect(() => {
     fetchFlightsData();
   }, []);
@@ -70,20 +87,31 @@ function App() {
   const generateSearchResults = () => {
     if (flightsData.length <= 0)
       return <Alert color="danger">No flights available</Alert>;
-    return (<>{flightsData.map((flight) => (
-      <SearchResult
-        key={flight.id}
-        price={flight.price}
-        cityFrom={flight.cityFrom}
-        flyFrom={flight.flyFrom}
-        cityTo={flight.cityTo}
-        flyTo={flight.flyTo}
-        dTime={flight.dTime}
-        aTime={flight.aTime}
-        route={flight.route}
-      />
+    return (
+      <>
+        {flightsData.map((flight, index) => {
+          return index < resultsNumber ? (
+            <SearchResult
+              key={flight.id}
+              price={flight.price}
+              cityFrom={flight.cityFrom}
+              flyFrom={flight.flyFrom}
+              cityTo={flight.cityTo}
+              flyTo={flight.flyTo}
+              dTime={flight.dTime}
+              aTime={flight.aTime}
+              route={flight.route}
+            />
+          ) : null;
+        })}
 
-    ))} <Button style={btnStyle}>Nex page</Button> </> );
+        {flightsData.length > resultsNumber ? (
+          <Button style={btnStyle} onClick={handleLoadMore}>
+            Load more
+          </Button>
+        ) : null}
+      </>
+    );
   };
 
   const generateSpinner = () => (
@@ -92,11 +120,8 @@ function App() {
     </div>
   );
 
-
-
   return (
-    <div style={{display : 'flex',
-    flexDirection : 'column',}}> 
+    <div style={{ display: "flex", flexDirection: "column" }}>
       <SearchBar
         handleSelectChange={handleSelectChange}
         searchBarInputFrom={searchBarInputFrom}
@@ -107,7 +132,6 @@ function App() {
         handleDateChange={handleDateChange}
         searchBarDateFrom={searchBarDateFrom}
         searchBarDateTo={searchBarDateTo}
-
       />
 
       {!isLoading ? generateSearchResults() : generateSpinner()}
