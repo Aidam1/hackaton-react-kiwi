@@ -1,5 +1,6 @@
 import React from "react";
-import { Card, CardText, CardTitle, CardHeader } from "reactstrap";
+import { Card, CardText,Button, CardBody } from "reactstrap";
+import "./SearchResult.css"
 
 const SearchResult = (props) => {
   const { price, cityFrom, flyFrom, cityTo, flyTo, dTime, aTime } = props;
@@ -10,18 +11,24 @@ const SearchResult = (props) => {
   };
 
   const departureDateString = formatDateToString(dTime);
-  const arriavalDateString = formatDateToString(aTime);
+  const arrivalDateString = formatDateToString(aTime);
 
   return (
-    <Card>
-      <CardHeader>
-        From {cityFrom} ({flyFrom}) To {cityTo} ({flyTo})
-      </CardHeader>
-      <CardTitle>{price} EUR</CardTitle>
-      <CardText>{departureDateString}</CardText>
+    <Card >
 
-      <CardText>Test</CardText>
-    </Card>
+<CardBody>
+    <CardText>{departureDateString}</CardText>
+          <CardText>{arrivalDateString}</CardText>
+
+          <CardText>
+            From {cityFrom} ({flyFrom}) To {cityTo} ({flyTo})
+          </CardText>
+          <CardText>{price} EUR</CardText>
+
+          <Button size="sm">TEXT</Button>
+    </CardBody>
+
+</Card>
   );
 };
 
